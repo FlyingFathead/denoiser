@@ -1,6 +1,7 @@
 # denoise_cuda.py
 
 import sys
+import os
 import torch
 import torchaudio
 from denoiser import pretrained
@@ -36,7 +37,7 @@ def process_audio(input_file):
                 chunk = wav[:, start:end]
                 denoised_chunk = model(chunk[None])[0]
 
-                # Handle chunk combination and overlap
+                # Combine chunks, handling overlaps
                 if i > 0:
                     denoised_wav = torch.cat((denoised_wav[:, :-overlap_size], denoised_chunk), 1)
                 else:
@@ -46,14 +47,16 @@ def process_audio(input_file):
         print("\nProcess interrupted. Exiting...")
         sys.exit(1)
 
-    output_file = input_file.replace('.mp3', '_denoised.wav')
+    # Constructing the output filename based on the input file's extension
+    base, ext = os.path.splitext(input_file)
+    output_file = f"{base}_denoised{ext}"
     print(f"Saving processed audio as {output_file}...")
     torchaudio.save(output_file, denoised_wav.cpu(), model.sample_rate)
     print("Processing complete.")
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: python denoise_cuda.py <input_file.mp3>")
+        print("Usage: python denoise_cuda.py <input_file>")
         sys.exit(1)
     
     process_audio(sys.argv[1])
