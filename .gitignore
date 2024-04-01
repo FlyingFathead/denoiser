@@ -13,3 +13,4 @@ build
 *.th
 launch_master.sh
 conf/dset/master.yaml
+processed_audio/

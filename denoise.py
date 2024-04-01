@@ -1,3 +1,15 @@
+# denoise.py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# https://github.com/FlyingFathead/denoiser
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+""" 
+
+original denoiser, don't use
+(use `denoise_cuda.py` or `denoise_cuda_multitrack.py` instead)
+
+"""
+
 import sys
 import torch
 import torchaudio

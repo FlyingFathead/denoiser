@@ -1,4 +1,7 @@
 # denoise_cpu.py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# https://github.com/FlyingFathead/denoiser
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import sys
 import torch

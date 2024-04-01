@@ -1,4 +1,7 @@
 # denoise_cuda.py
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# https://github.com/FlyingFathead/denoiser
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import sys
 import os

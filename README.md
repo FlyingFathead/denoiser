@@ -5,6 +5,7 @@ This fork builds upon the archived original repository by introducing additional
 
 - `denoise_cuda.py`: Leverages CUDA for GPU acceleration, recommended for processing with NVIDIA GPUs.
 - `denoise.py` and `denoise_cpu.py`: Offer alternative processing strategies depending on your system's capabilities.
+- `denoise_cuda_multitrack.py`: Strips down the input file to separate mono tracks, runs the denoise on each mono track at a time, then does a stereo mixdown of all tracks.
 
 Since the project is available on PyPi, you might want to install it with:
 
@@ -26,9 +27,18 @@ Alternatively, if you prefer not to clone the entire repository, you can simply 
 wget https://github.com/FlyingFathead/denoiser/raw/main/denoise_cuda.py
 ```
 
-## `denoise_cuda.py` Usage and Details
+## Usage and Details
 
-The `denoise_cuda.py` script is designed for denoising audio files for dialogue clarity (i.e. for better accuracy with transcription software like `openai-whisper`), it utilizes CUDA capabilities of NVIDIA GPUs for faster processing. This script is particularly useful for denoising large audio files efficiently.
+- `denoise_cuda.py` is designed for denoising audio files for dialogue clarity (i.e. for better accuracy with transcription software like `openai-whisper`), it utilizes CUDA capabilities of NVIDIA GPUs for faster processing. This script is particularly useful for denoising large audio files efficiently.
+
+- `denoise_cuda_multitrack.py` is designed for multitrack processing, it requires `ffmepg` (more specifically `ffprobe`)
+  - It attempts to extract a multitrack source to mono tracks before denoising it, and combines the processed mono audio tracks back into a stereo mix.
+  - Stereo Mixdown: The script combines the denoised mono tracks into a stereo mix. For a standard 5.1 layout, this would typically involve:
+
+    - Mixing the Front Left (FL) and Front Right (FR) directly into the corresponding left and right channels of the stereo mix.
+    - Blending the Center (FC) channel into both the left and right stereo channels to ensure that dialog, which is typically placed in the center channel, remains prominent.
+    - Incorporating Side or Rear Left (SL/SR or RL/RR) channels into both stereo channels, possibly at a reduced level, to retain ambient and directional effects without overpowering the main content.
+    - Typically ignoring or very subtly mixing the Low-Frequency Effects (LFE) channel since it's designed for subwoofers and contains low-frequency content that might not be necessary or appropriate for the stereo mix intended for broader listening environments.
 
 ### Prerequisites
 
@@ -46,7 +56,7 @@ The `denoise_cuda.py` script is designed for denoising audio files for dialogue 
 
 ### Usage
 
-To use the script, simply provide the path to an audio file as an argument:
+To use the script, simply provide the path to an audio file as an argument, i.e.:
 
 ```bash
 python denoise_cuda.py <path_to_audio_file>
