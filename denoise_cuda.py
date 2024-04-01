@@ -19,30 +19,32 @@ def process_audio(input_file):
     wav = convert_audio(wav.cuda(), sr, model.sample_rate, model.chin)
 
     print("Preparing for chunk-based processing...")
-    # Calculate chunk size and overlap in samples
     chunk_size = int(model.sample_rate * CHUNK_DURATION)
     overlap_size = int(model.sample_rate * OVERLAP_DURATION)
-
-    # Process audio in chunks to avoid OOM
     total_length = wav.size(1)
-    denoised_wav = torch.Tensor().cuda()
     num_chunks = (total_length - overlap_size) // (chunk_size - overlap_size) + 1
 
     print("Starting denoising process...")
-    with torch.no_grad():
-        for i in range(num_chunks):
-            print(f"Processing chunk {i + 1} / {num_chunks}...")
-            start = i * (chunk_size - overlap_size)
-            end = start + chunk_size if i < num_chunks - 1 else total_length
-            chunk = wav[:, start:end]
+    denoised_wav = torch.Tensor().cuda()
+    
+    try:
+        with torch.no_grad():
+            for i in range(num_chunks):
+                print(f"Processing chunk {i + 1} / {num_chunks}...")
+                start = i * (chunk_size - overlap_size)
+                end = start + chunk_size if i < num_chunks - 1 else total_length
+                chunk = wav[:, start:end]
+                denoised_chunk = model(chunk[None])[0]
 
-            denoised_chunk = model(chunk[None])[0]
+                # Handle chunk combination and overlap
+                if i > 0:
+                    denoised_wav = torch.cat((denoised_wav[:, :-overlap_size], denoised_chunk), 1)
+                else:
+                    denoised_wav = torch.cat((denoised_wav, denoised_chunk), 1)
 
-            # Combine chunks, handle overlaps if not the first or last chunk
-            if i > 0:
-                denoised_wav = torch.cat((denoised_wav[:, :-overlap_size], denoised_chunk), 1)
-            else:
-                denoised_wav = torch.cat((denoised_wav, denoised_chunk), 1)
+    except KeyboardInterrupt:
+        print("\nProcess interrupted. Exiting...")
+        sys.exit(1)
 
     output_file = input_file.replace('.mp3', '_denoised.wav')
     print(f"Saving processed audio as {output_file}...")
