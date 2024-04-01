@@ -10,7 +10,7 @@ pip install -U denoiser
 
 NOTE: Use the included denoiser scripts in this repo at your own risk. Absolutely no warranties.
  
-# (Original repo README below)
+# (Original repo `README.md` below)
 # Real Time Speech Enhancement in the Waveform Domain (Interspeech 2020)
 
 ![tests badge](https://github.com/facebookresearch/denoiser/workflows/tests/badge.svg)
