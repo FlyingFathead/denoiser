@@ -1,3 +1,16 @@
+# About this fork
+
+Otherwise the same as the original repo (which is now archived), but with the difference that I've done a few scripts to help with the processing, namely `denoise.py` and `denoise_cpu.py`.
+
+Since the project is available on PyPi, you might want to install it with:
+
+```bash
+pip install -U denoiser
+```
+
+NOTE: Use the included denoiser scripts in this repo at your own risk. Absolutely no warranties.
+ 
+# (Original repo README below)
 # Real Time Speech Enhancement in the Waveform Domain (Interspeech 2020)
 
 ![tests badge](https://github.com/facebookresearch/denoiser/workflows/tests/badge.svg)
