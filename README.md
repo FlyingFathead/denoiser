@@ -1,6 +1,10 @@
 # About this fork
 
-Otherwise the same as the original repo (which is now archived), but with the difference that I've done a few scripts to help with the processing, namely `denoise.py` and `denoise_cpu.py`.
+
+This fork builds upon the archived original repository by introducing additional scripts designed to facilitate audio denoising processes, making it particularly suitable for preparing audio files for transcription, including with tools like OpenAI's Whisper. The additional scripts include:
+
+- `denoise_cuda.py`: Leverages CUDA for GPU acceleration, recommended for processing with NVIDIA GPUs.
+- `denoise.py` and `denoise_cpu.py`: Offer alternative processing strategies depending on your system's capabilities.
 
 Since the project is available on PyPi, you might want to install it with:
 
@@ -8,7 +12,49 @@ Since the project is available on PyPi, you might want to install it with:
 pip install -U denoiser
 ```
 
-NOTE: Use the included denoiser scripts in this repo at your own risk. Absolutely no warranties.
+Additionally, you can clone this repository for the scripts:
+
+```bash
+git clone https://github.com/FlyingFathead/denoiser
+cd denoiser
+```
+
+Alternatively, if you prefer not to clone the entire repository, you can simply copy the necessary script from GitHub after installing the denoiser package:
+
+```bash
+# Example `wget` for denoise_cuda.py
+wget https://github.com/FlyingFathead/denoiser/raw/main/denoise_cuda.py
+```
+
+## `denoise_cuda.py` Usage and Details
+
+The `denoise_cuda.py` script is designed for denoising audio files for dialogue clarity (i.e. for better accuracy with transcription software like `openai-whisper`), it utilizes CUDA capabilities of NVIDIA GPUs for faster processing. This script is particularly useful for denoising large audio files efficiently.
+
+### Prerequisites
+
+- NVIDIA GPU with CUDA support.
+- PyTorch with CUDA enabled.
+- torchaudio and the denoiser package.
+- The script assumes that you have already installed the necessary Python packages (`torch`, `torchaudio`, and `denoiser`). If not, you should install them using the provided commands.
+
+### Features
+
+- Utilizes the pretrained DNS64 model from the denoiser library.
+- Processes audio in chunks to manage memory usage effectively, which is crucial for handling large files.
+- Supports dynamic adjustment of chunk size and overlap duration to optimize for different audio lengths and memory capacities.
+- Graceful handling of interruption signals (e.g., CTRL+C) to stop the processing safely if needed.
+
+### Usage
+
+To use the script, simply provide the path to an audio file as an argument:
+
+```bash
+python denoise_cuda.py <path_to_audio_file>
+```
+
+### Note
+
+The scripts are provided "as-is" with no warranties. They are intended for experimental and development use and should be employed with discretion, particularly in production environments.
  
 # (Original repo `README.md` below)
 # Real Time Speech Enhancement in the Waveform Domain (Interspeech 2020)
