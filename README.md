@@ -25,6 +25,7 @@ Alternatively, if you prefer not to clone the entire repository, you can simply 
 ```bash
 # Example `wget` for denoise_cuda.py
 wget https://github.com/FlyingFathead/denoiser/raw/main/denoise_cuda.py
+wget https://github.com/FlyingFathead/denoiser/raw/main/denoise_cuda_multitrack.py
 ```
 
 ## Usage and Details
