@@ -30,7 +30,7 @@ def process_audio(input_file):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: python script.py <input_file.mp3>")
+        print("Usage: python denoise_cpu.py <input_file.mp3>")
         sys.exit(1)
 
     process_audio(sys.argv[1])
