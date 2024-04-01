@@ -1,6 +1,6 @@
 # denoise_cuda_multitrack.py
 
-version_number = "v0.03"
+version_number = "0.03"
 
 # (requires `ffprobe` and `ffmpeg`)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
