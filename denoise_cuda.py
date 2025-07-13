@@ -13,8 +13,10 @@ from denoiser.dsp import convert_audio
 # Define chunk size and overlap in seconds
 CHUNK_DURATION = 10  # Chunk duration in seconds
 OVERLAP_DURATION = 1  # Overlap duration in seconds
+MIX_LEVEL = 0.5  # 1.0 = all denoised, 0 = all original, 0.85 is a strong denoise, tweak as desired
 
-def process_audio(input_file):
+def process_audio(input_file, mix_level=MIX_LEVEL):
+    print(f">>> Wet/dry mix level: {mix_level:.2f}  (1 = all denoised, 0 = original)")    
     print("Loading the pretrained DNS64 model...")
     model = pretrained.dns64().cuda()
 
@@ -40,11 +42,20 @@ def process_audio(input_file):
                 chunk = wav[:, start:end]
                 denoised_chunk = model(chunk[None])[0]
 
+                # Apply wet/dry mix
+                # Ensure both are same length (might not be at the end!)
+                min_len = min(chunk.shape[1], denoised_chunk.shape[1])
+                chunk = chunk[:, :min_len]
+                denoised_chunk = denoised_chunk[:, :min_len]
+
+                mixed_chunk = mix_level * denoised_chunk + (1 - mix_level) * chunk
+
                 # Combine chunks, handling overlaps
                 if i > 0:
-                    denoised_wav = torch.cat((denoised_wav[:, :-overlap_size], denoised_chunk), 1)
+                    denoised_wav = torch.cat((denoised_wav[:, :-overlap_size], mixed_chunk), 1)
                 else:
-                    denoised_wav = torch.cat((denoised_wav, denoised_chunk), 1)
+                    denoised_wav = torch.cat((denoised_wav, mixed_chunk), 1)
+
 
     except KeyboardInterrupt:
         print("\nProcess interrupted. Exiting...")
@@ -57,9 +68,21 @@ def process_audio(input_file):
     torchaudio.save(output_file, denoised_wav.cpu(), model.sample_rate)
     print("Processing complete.")
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: python denoise_cuda.py <input_file>")
+if __name__ == "__main__":
+    # Accept either 1 or 2 arguments after the script name
+    #   argv[1] = input file  (mandatory)
+    #   argv[2] = mix level   (optional, 0-1 float)
+    if len(sys.argv) not in (2, 3):
+        print("Usage: python denoise_cuda.py <input_file> [mix_level 0.0-1.0]")
         sys.exit(1)
+
+    input_path = sys.argv[1]
+
+    # Use provided mix level or fall back to constant
+    mix = float(sys.argv[2]) if len(sys.argv) == 3 else MIX_LEVEL
+
+    # Clamp mix just in case someone passes garbage
+    mix = max(0.0, min(mix, 1.0))
+
+    process_audio(input_path, mix)
     
-    process_audio(sys.argv[1])
